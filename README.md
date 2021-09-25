@@ -16,7 +16,7 @@ Run this command to add this plugin to your site's Gemfile, along with Lit 2 and
 ```shell
 $ bundle add bridgetown-lit-renderer -g bridgetown_plugins
 
-$ yarn add lit @lit-labs/ssr
+$ yarn add bridgetown-lit-renderer lit @lit-labs/ssr
 ```
 
 Create a file in `config/lit-ssr.config.js` with the following:
