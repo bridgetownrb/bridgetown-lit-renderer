@@ -80,7 +80,27 @@ Now start up your Bridgetown site, visit the page, and if all goes well, you sho
 
 You can reload the page several times and see that the timestamp doesn't change, because Lit's SSR + Hydration support knows not to re-render the component. However, if you change the `hello` attribute in the HTML, you'll get a re-render and thus see a new timestamp. _How cool is that?!_
 
-### Configuration options
+### Usage and Configuration Options
+
+The `lit` helper works in any Ruby template language and let's you pass data down to the Lit SSR build process. As long as your `data` value is an object that can be converted to JSON (via Ruby's `to_json`), you're set. In fact, you can even pass your page/resource front matter along for the ride:
+
+```erb
+<%= lit data: resource.data do %>
+  <page-header title="${data.title}"></page-header>
+<% end %>
+```
+
+When the component is hydrated, it will utilize the same data that was passed at build time and avoid a client-side re-render. However, from that point forward you're free to mutate component attribute/properties to trigger re-renders as normal. [Check out Lit's `firstUpdated` method](https://lit.dev/docs/components/lifecycle/#reactive-update-cycle-completing) as a good place to start.
+
+You also have the option of choosing a different entry point (aka your JS file that contains or imports one or more Lit components). The default is `./frontend/javascript/lit-components.js`, but you can specify any other file you wish (the path should be relative to your project root).
+
+```erb
+<%= lit data: resource.data, entry: "./frontend/javascript/components/headers.js" do %>
+  <page-header title="${data.title}"></page-header>
+<% end %>
+```
+
+This would typically coincide with a strategy of having multiple Webpack entry points, and loading different entry points on different parts of your site. An exercise left for the reader…
 
 _More docs forthcoming..._
 
