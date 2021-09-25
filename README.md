@@ -75,7 +75,7 @@ You can reload the page several times and see that the timestamp doesn't change,
 
 ### Configuration options
 
-…
+_More docs forthcoming..._
 
 ## Testing
 
