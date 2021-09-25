@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/username/bridgetown-lit-renderer.git"
+    "url": "https://github.com/bridgetownrb/bridgetown-lit-renderer.git"
   },
   "author": "Bridgetown Maintainers <maintainers@bridgetownrb.com>",
   "homepage": "https://www.bridgetownrb.com",

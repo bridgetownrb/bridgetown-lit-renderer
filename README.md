@@ -1,6 +1,6 @@
 # Bridgetown Lit Renderer
 
-SSR + Hydration of Lit components in your Bridgetown site.
+Simple pipeline for SSR + hydration of Lit components in your Bridgetown site.
 
 ## Installation
 

@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.version       = BridgetownLitRenderer::VERSION
   spec.author        = "Bridgetown Team"
   spec.email         = "maintainers@bridgetownrb.com"
-  spec.summary       = "Pipeline for SSR + Hydration of Lit elements"
+  spec.summary       = "Simple pipeline for SSR + hydration of Lit components"
   spec.homepage      = "https://github.com/bridgetownrb/bridgetown-lit-renderer"
   spec.license       = "MIT"
 
