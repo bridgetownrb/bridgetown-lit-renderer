@@ -1,0 +1,31 @@
+{
+  "name": "bridgetown-lit-renderer",
+  "version": "1.0.0",
+  "main": "frontend/javascript/index.js",
+  "exports": {
+    ".": {
+      "browser": {
+        "default": "./frontend/javascript/index.js"
+      }
+    },
+    "./build": {
+      "require": "./src/build.js"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/username/bridgetown-lit-renderer.git"
+  },
+  "author": "Bridgetown Maintainers <maintainers@bridgetownrb.com>",
+  "homepage": "https://www.bridgetownrb.com",
+  "license": "MIT",
+  "private": false,
+  "files": [
+    "frontend",
+    "src"
+  ],
+  "dependencies": {
+    "@webcomponents/template-shadowroot": "^0.1.0",
+    "esbuild": "^0.12"
+  }
+}
