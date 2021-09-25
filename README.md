@@ -1,6 +1,13 @@
 # Bridgetown Lit Renderer
 
-Simple pipeline for SSR + hydration of Lit components in your Bridgetown site.
+[![lit][lit]][lit-url]
+[![gem][gem]][gem-url]
+[![npm][npm]][npm-url]
+[![Demo Site](https://img.shields.io/badge/Demo%20Site-teal?style=for-the-badge&logo=safari)](https://bridgetown-lit-renderer.onrender.com)
+
+Simple pipeline for SSR + hydration of Lit components in your [Bridgetown](https://www.bridgetownrb.com) site.
+
+[Check out the demo site repo](https://github.com/bridgetownrb/lit-renderer-example), or keep reading to get started.
 
 ## Installation
 
@@ -90,3 +97,10 @@ _More docs forthcoming..._
 4. Commit your changes (`git commit -am 'Add some feature'`)
 5. Push to the branch (`git push origin my-new-feature`)
 6. Create a new Pull Request
+
+[lit]: https://img.shields.io/badge/-Lit-324FFF?style=for-the-badge&logo=lit&logoColor=white"
+[lit-url]: https://lit.dev
+[gem]: https://img.shields.io/gem/v/bridgetown-lit-renderer.svg?style=for-the-badge&color=red
+[gem-url]: https://rubygems.org/gems/bridgetown-lit-renderer
+[npm]: https://img.shields.io/npm/v/bridgetown-lit-renderer.svg?style=for-the-badge
+[npm-url]: https://npmjs.com/package/bridgetown-lit-renderer
