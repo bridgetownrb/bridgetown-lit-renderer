@@ -48,9 +48,8 @@ export class HappyDaysElement extends LitElement {
     :host {
       display: block;
       border: 2px dashed gray;
-      margin: 4px;
-      padding: 4px;
-      width: 20vw;
+      padding: 20px;
+      max-width: 300px;
     }
   `
 
@@ -68,10 +67,10 @@ export class HappyDaysElement extends LitElement {
 customElements.define('happy-days', HappyDaysElement)
 ```
 
-Finally, create a new `.erb` page somewhere in `src`, and add this somewhere in your template:
+Finally, create a new `.erb` page somewhere in `src`, and add this to your template:
 
 ```erb
-<%= lit data: {hello: "there"} do %>
+<%= lit data: { hello: "there" } do %>
   <happy-days hello="${data.hello}"></happy-days>
 <% end %>
 ```
@@ -102,9 +101,49 @@ You also have the option of choosing a different entry point (aka your JS file t
 
 This would typically coincide with a strategy of having multiple Webpack entry points, and loading different entry points on different parts of your site. An exercise left for the reader…
 
-_More docs forthcoming..._
+### Technical and Performance Considerations
+
+The Bridgetown Lit render helper works by compiling your entry point together with your code block via esbuild and caching the resulting JS snippet in-memory. A second pass combines your `data` with the snippet and executes it via Node using Lit's SSR rendering pipeline. That output is again cached in a way which persists on-disk for use across builds.
+
+This for performance reasons. If you have added a Lit template to a layout used by, say, a thousand products, your first build will indeed execute Lit SSR for those thousand products, but thereafter it will be cached. If you change the data for one product, such as a price, Lit SSR will reexecute _only_ for that one product. In addition, for a data-only change the previously compiled JS snippet via esbuild _won't_ need to be recompiled. Of course if you also modify either the HTML markup within the helper block or the entry point itself, recompilation must take place. This is all in an effort to avoid the painful scenario where multiple esbuild/Node processes must be invoked for every `lit` helper across every layout and page for every build.
+
+As you can imagine, it's recommended you don't include any Ruby template code _within_ the helper code block (e.g., using `<%= %>` tags), as that would necessitate recompiling with esbuild on a regular basis.
+
+Thus with a bit of careful planning of which entry point(s) you create, the data you provide, and the structure of your HTML markup within the `lit` helper, you can achieve decent Lit SRR performance while still taking full advantage of the Ruby templates and components you know and love.
+
+**A note about Lit templates:** in case you're wondering, the markup within the `lit` helper is actually executed inside Lit's `html` tagged template literal, and [all the usual rules of Lit templates apply](https://lit.dev/docs/templates/overview/). It's recommended you keep the markup within the helper block brief, and let the web component itself do most of the heavy lifting.
+
+**Use only one root element.** Because of how the provided `hydrate-root` element works, which will wrap your markup in each `lit` code block, you should only have _one_ root element, and it should be a Lit component. For example, instead of doing this:
+
+```erb
+<%= lit do %>
+  <div>
+    <h2>Hmm...</h2>
+    <my-component>This doesn't seem right.</my-component>
+  </div>
+  <p>Huh.</p>
+<% end %>
+```
+
+you should be doing this:
+
+```erb
+<%= lit do %>
+  <wrapper-component>
+    <div>
+      <h2>Hmm...</h2>
+      <my-component>This doesn't seem right.</my-component>
+    </div>
+    <p>Huh.</p>
+  </wrapper-component>
+<% end %>
+```
+
+**Disabling hydration?** If for some reason you can't permit a `hydrate-root` element to wrap a Lit code block, you can pass a `hydrate_root: false` argument to the `lit` helper. This breaks hydration however, and likewise the [Declarative Shadow DOM (DSD)](https://web.dev/declarative-shadow-dom/) polyfill won't be loaded. (Currently DSD is only supported natively in Chromium-based browsers such as Chrome, Edge, and Brave.) It will thus be up to you to manage those features as you see fit.
 
 ## Testing
+
+_Note: a proper site fixture and tests are in the works._
 
 * Run `bundle exec rake test` to run the test suite
 * Or run `script/cibuild` to validate with Rubocop and Minitest together.
