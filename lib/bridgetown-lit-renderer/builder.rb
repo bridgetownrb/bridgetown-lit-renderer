@@ -2,15 +2,19 @@
 
 module BridgetownLitRenderer
   module Renderer
-    def self.reset_cache
-      @code_cache = {}
-      @lit_notice_printed = false
+    def self.cache
+      @cache ||= Bridgetown::Cache.new("LitSSR")
+    end
+
+    def self.reset
+      @esbuild_notice_printed = false
+      @render_notice_printed = false
     end
 
     def self.esbuild(code, site)
-      unless @lit_notice_printed
+      unless @esbuild_notice_printed
         Bridgetown.logger.info "Lit SSR:", "Bundling with esbuild..."
-        @lit_notice_printed = true
+        @esbuild_notice_printed = true
       end
 
       IO.popen(["node", site.in_root_dir("./config/lit-ssr.config.js")], "r+") do |pipe|
@@ -20,11 +24,11 @@ module BridgetownLitRenderer
       end
     end
 
-    def self.render(code, data:, entry:, site:) # rubocop:disable Metrics/MethodLength
-      @code_cache ||= {}
-      cache_key = "#{code}#{entry}"
+    def self.render(code, data:, entry:, site:, caching: true) # rubocop:disable Metrics/MethodLength
+      cache_key = "esbuild-#{code}#{entry}"
+      built_snippet = nil
 
-      unless @code_cache[cache_key]
+      builder = -> {
         build_code = <<~JS
           import { Readable } from "stream"
           import { render } from "@lit-labs/ssr/lib/render-with-global-dom-shim.js"
@@ -48,11 +52,23 @@ module BridgetownLitRenderer
           });
         JS
 
-        @code_cache[cache_key] = esbuild(build_code, site)
+        esbuild(build_code, site)
+      }
+
+
+      built_snippet = if caching
+                        cache.getset(cache_key) { builder.() }
+                      else
+                        builder.()
+                      end
+
+      unless @render_notice_printed
+        Bridgetown.logger.info "Lit SSR:", "Rendering components..."
+        @render_notice_printed = true
       end
 
       IO.popen(["node"], "r+") do |pipe|
-        pipe.puts "const data = #{data.to_json}; #{@code_cache[cache_key]}"
+        pipe.puts "const data = #{data.to_json}; #{built_snippet}"
         pipe.close_write
         pipe.read
       end.partition("====== SSR ======").last.html_safe
@@ -60,12 +76,8 @@ module BridgetownLitRenderer
   end
 
   class Builder < Bridgetown::Builder
-    def self.cache
-      @cache ||= Bridgetown::Cache.new("LitSSR")
-    end
-
     def build
-      BridgetownLitRenderer::Renderer.reset_cache
+      BridgetownLitRenderer::Renderer.reset
       helper "lit", helpers_scope: true do |
         data: {},
         hydrate_root: true,
@@ -78,11 +90,11 @@ module BridgetownLitRenderer
         end
 
         if site.config.disable_lit_caching
-          next BridgetownLitRenderer::Renderer.render(code, data: data, entry: entry, site: site)
+          next BridgetownLitRenderer::Renderer.render(code, data: data, entry: entry, site: site, caching: false)
         end
 
         entry_key = entry.start_with?("./") ? File.stat(site.in_root_dir(entry)).mtime : entry
-        BridgetownLitRenderer::Builder.cache.getset("#{code}#{data}#{entry_key}") do
+        BridgetownLitRenderer::Renderer.cache.getset("output-#{code}#{data}#{entry_key}") do
           BridgetownLitRenderer::Renderer.render(code, data: data, entry: entry, site: site)
         end
       end
