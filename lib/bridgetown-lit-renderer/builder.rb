@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
+require "random-port"
+
 module BridgetownLitRenderer
   module Renderer
+    @serverpid = nil
+    @serverport = nil
+
     def self.cache
       @cache ||= Bridgetown::Cache.new("LitSSR")
     end
@@ -29,11 +34,12 @@ module BridgetownLitRenderer
       built_snippet = nil
 
       builder = -> {
+        entry_import = "import #{entry.to_json}"
         build_code = <<~JS
           import { Readable } from "stream"
           import { render } from "@lit-labs/ssr/lib/render-with-global-dom-shim.js"
           import { html } from "lit"
-          import #{entry.to_json}
+          #{entry_import}
 
           const ssrResult = render(html`
             #{code}
@@ -62,23 +68,52 @@ module BridgetownLitRenderer
         @render_notice_printed = true
       end
 
-      p "posting!"
-      Faraday.post(
-        "http://192.168.0.123:8080",
-        "const data = #{data.to_json}; #{built_snippet}"
-      ).body.html_safe
+      start_node_server
 
-      # IO.popen(["node"], "r+") do |pipe|
-      #   pipe.puts "const data = #{data.to_json}; #{built_snippet}"
-      #   pipe.close_write
-      #   pipe.read
-      # end.partition("====== SSR ======").last.html_safe
+      output = Faraday.post(
+        "http://localhost:#{@serverport}",
+        "const data = #{data.to_json}; #{built_snippet}"
+      ).body
+
+      if output == "SCRIPT NOT VALID!"
+        output = "<!-- SCRIPT ERROR: #{entry} -->"
+        cache.delete(cache_key) if caching
+      end
+
+      output.html_safe
+    end
+
+    def self.start_node_server
+      return if @serverpid
+
+      @serverport = RandomPort::Pool.new.acquire
+      node_file = File.expand_path("../../../src/serv.js", __FILE__)
+
+      @serverpid = spawn(
+        {"LIT_SSR_SERVER_PORT" => @serverport.to_s},
+        "node #{node_file}",
+        :pgroup => true
+      )
+      Process.detach @serverpid
+      sleep 0.5
+    end
+
+    def self.stop_node_server
+      if @serverpid
+        Process.kill("SIGTERM", -Process.getpgid(@serverpid))
+        @serverpid = nil
+        @serverport = nil
+      end
     end
   end
 
   class Builder < Bridgetown::Builder
     def build
       BridgetownLitRenderer::Renderer.reset
+      hook :site, :post_render do
+        BridgetownLitRenderer::Renderer.stop_node_server
+      end
+
       helper "lit", helpers_scope: true do |
         data: {},
         hydrate_root: true,
