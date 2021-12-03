@@ -39,17 +39,12 @@ module BridgetownLitRenderer
             #{code}
           `);
 
-          const _tmplStream = Readable.from(ssrResult)
+          let ret = []
+          for (const chunk of ssrResult) {
+            ret.push(chunk)
+          }
 
-          let _tmplOutput = ""
-          _tmplStream.on('data', function(chunk) {
-            _tmplOutput += chunk;
-          });
-
-          _tmplStream.on('end',function() {
-            process.stdout.write("====== SSR ======") // marker to ensure stray console outputs don't end up in HTML
-            process.stdout.write(_tmplOutput)
-          });
+          ret.join("")
         JS
 
         esbuild(build_code, site)
@@ -67,11 +62,17 @@ module BridgetownLitRenderer
         @render_notice_printed = true
       end
 
-      IO.popen(["node"], "r+") do |pipe|
-        pipe.puts "const data = #{data.to_json}; #{built_snippet}"
-        pipe.close_write
-        pipe.read
-      end.partition("====== SSR ======").last.html_safe
+      p "posting!"
+      Faraday.post(
+        "http://192.168.0.123:8080",
+        "const data = #{data.to_json}; #{built_snippet}"
+      ).body.html_safe
+
+      # IO.popen(["node"], "r+") do |pipe|
+      #   pipe.puts "const data = #{data.to_json}; #{built_snippet}"
+      #   pipe.close_write
+      #   pipe.read
+      # end.partition("====== SSR ======").last.html_safe
     end
   end
 
