@@ -10,3 +10,5 @@ group :test do
   gem "minitest-reporters"
   gem "shoulda"
 end
+
+gem "solargraph", "~> 0.44.2", group: :development

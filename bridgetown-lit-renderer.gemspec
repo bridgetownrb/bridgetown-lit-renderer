@@ -11,10 +11,13 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/bridgetownrb/bridgetown-lit-renderer"
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r!^(test|script|spec|features|frontend)/!) }
+  spec.files         = `git ls-files -z`.split("\x0").reject do |f|
+    f.match(%r!^(test|script|spec|features|frontend)/!)
+  end
   spec.test_files    = spec.files.grep(%r!^test/!)
   spec.require_paths = ["lib"]
-  spec.metadata      = { "yarn-add" => "bridgetown-lit-renderer@#{BridgetownLitRenderer::VERSION}" }
+  spec.metadata      = { "yarn-add"              => "bridgetown-lit-renderer@#{BridgetownLitRenderer::VERSION}",
+                         "rubygems_mfa_required" => "true", }
 
   spec.required_ruby_version = ">= 2.5.0"
 
@@ -22,6 +25,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "random-port", ">= 0.5"
 
   spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rake", "~> 12.0"
-  spec.add_development_dependency "rubocop-bridgetown", "~> 0.2"
+  spec.add_development_dependency "rake", "~> 13.0"
+  spec.add_development_dependency "rubocop-bridgetown", "~> 0.3"
 end

@@ -1,8 +1,8 @@
 const http = require("http")
-const litexec = require("./litexec")
+const litexec = require("./ssr_exec")
 
 const server = http.createServer((req, res) => {
-  if (req.method === "POST") {
+  if (req.method === "POST" && req.headers.authorization?.endsWith(process.env.LIT_SSR_AUTH_TOKEN)) {
     let body = ""
     req.on("data", (chunk) => {
       body += chunk.toString()
@@ -21,6 +21,7 @@ const server = http.createServer((req, res) => {
 			}
     })
   } else {
+    res.statusCode = 400
     res.end("Invalid Request!")
   }
 })
