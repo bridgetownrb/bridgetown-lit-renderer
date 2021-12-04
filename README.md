@@ -103,13 +103,15 @@ This would typically coincide with a strategy of having multiple Webpack entry p
 
 ### Technical and Performance Considerations
 
-The Bridgetown Lit render helper works by compiling your entry point together with your code block via esbuild and caching the resulting JS snippet. A second pass combines your `data` with the snippet and executes it via Node using Lit's SSR rendering pipeline. That output is again cached in a way which persists on-disk for use across builds.
+The Bridgetown Lit render helper works by compiling your entry point together with your code block via esbuild and caching the resulting JS snippet. A second pass combines your `data` with the snippet and executes it via a temporary "sidecar" Node server which utilizes Lit's SSR rendering pipeline. That output is again cached in a way which persists on-disk for use across builds.
 
-This for performance reasons. If you have added a Lit template to a layout used by, say, a thousand products, your first build will indeed execute Lit SSR for those thousand products, but thereafter it will be cached. If you change the data for one product, such as a price, Lit SSR will reexecute _only_ for that one product. In addition, for a data-only change the previously compiled JS snippet via esbuild _won't_ need to be recompiled. Of course if you also modify either the HTML markup within the helper block or the entry point itself, recompilation must take place. This is all in an effort to avoid the painful scenario where multiple esbuild/Node processes must be invoked for every `lit` helper across every layout and page for every build. (**Note:** there's currently a bug where the esbuild JS snippets are cached during watch mode (`-w`) but not between separate build commands. This will be fixed for the next release.)
+This for performance reasons. If you have added a Lit template to a layout used by, say, a thousand products, your first build will indeed execute Lit SSR for those thousand products, but thereafter it will be cached. If you change the data for one product, such as a price, Lit SSR will reexecute _only_ for that one product. In addition, for a data-only change the previously compiled JS snippet via esbuild _won't_ need to be recompiled. Of course if you also modify either the HTML markup within the helper block or the entry point itself, recompilation must take place.
 
-As you can imagine, it's recommended you don't include any Ruby template code _within_ the helper code block (e.g., using `<%= %>` tags), as that would necessitate recompiling with esbuild on a regular basis.
+It's also recommended you don't include any Ruby template code _within_ the helper code block (e.g., using `<%= %>` tags) which results in constantly changing output, as that would necessitate recompiling with esbuild on a regular basis.
 
-Thus with a bit of careful planning of which entry point(s) you create, the data you provide, and the structure of your HTML markup within the `lit` helper, you can achieve decent Lit SRR performance while still taking full advantage of the Ruby templates and components you know and love.
+Thus with a bit of careful planning of which entry point(s) you create, the data you provide, and the structure of your HTML markup within the `lit` helper, you can achieve good Lit SSR performance while still taking full advantage of the Ruby templates and components you know and love.
+
+(If you do run into major issues and want to outright disable the esbuild/SSR caching, you can add `disable_lit_caching: true` to your Bridgetown config.)
 
 **A note about Lit templates:** in case you're wondering, the markup within the `lit` helper is actually executed inside Lit's `html` tagged template literal, and [all the usual rules of Lit templates apply](https://lit.dev/docs/templates/overview/). It's recommended you keep the markup within the helper block brief, and let the web component itself do most of the heavy lifting.
 
