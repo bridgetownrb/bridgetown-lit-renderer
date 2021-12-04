@@ -89,7 +89,7 @@ module BridgetownLitRenderer
       self.class.start_node_server
 
       output = Faraday.post(
-        "http://localhost:#{self.class.serverport}",
+        "http://127.0.0.1:#{self.class.serverport}",
         "const data = #{data.to_json}; #{built_code}",
         "Authorization" => "Bearer #{self.class.authtoken}"
       ).body
