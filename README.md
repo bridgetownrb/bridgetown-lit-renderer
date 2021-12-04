@@ -5,7 +5,7 @@
 [![npm][npm]][npm-url]
 [![Demo Site](https://img.shields.io/badge/Demo%20Site-teal?style=for-the-badge&logo=safari)](https://bridgetown-lit-renderer.onrender.com)
 
-Simple pipeline for SSR + hydration of Lit components in your [Bridgetown](https://www.bridgetownrb.com) site.
+This [Bridgetown](https://www.bridgetownrb.com) plugin provides you with an easy-to-use pipeline for SSR + hydration of Lit components. Create "islands" of interactivity using Lit-based web components which are fully supported in all major browsers.
 
 [Check out the demo site repo](https://github.com/bridgetownrb/lit-renderer-example), or keep reading to get started.
 
