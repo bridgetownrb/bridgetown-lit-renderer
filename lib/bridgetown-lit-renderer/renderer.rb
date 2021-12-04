@@ -13,7 +13,7 @@ module BridgetownLitRenderer
 
     attr_accessor :site
 
-    def self.start_node_server
+    def self.start_node_server(node_modules_path)
       return if serverpid
 
       self.authtoken =  SecureRandom.hex(64)
@@ -23,6 +23,7 @@ module BridgetownLitRenderer
         {
           "LIT_SSR_SERVER_PORT" => serverport.to_s,
           "LIT_SSR_AUTH_TOKEN"  => authtoken,
+          "NODE_PATH"           => node_modules_path,
         },
         "node #{File.expand_path("../../src/serve.js", __dir__)}",
         pgroup: true
@@ -86,7 +87,7 @@ module BridgetownLitRenderer
         @render_notice_printed = true
       end
 
-      self.class.start_node_server
+      self.class.start_node_server(site.in_root_dir("node_modules"))
 
       output = Faraday.post(
         "http://127.0.0.1:#{self.class.serverport}",
