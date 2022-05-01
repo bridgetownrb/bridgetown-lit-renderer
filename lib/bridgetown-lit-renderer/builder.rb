@@ -6,11 +6,15 @@ module BridgetownLitRenderer
       BridgetownLitRenderer::Renderer.instance.site = site
       BridgetownLitRenderer::Renderer.instance.reset
 
-      hook :site, :pre_render do
+      hook :site, :post_read do
         BridgetownLitRenderer::Renderer.instance.cache.clear unless site.config.enable_lit_caching
       end
 
       hook :site, :post_render do
+        BridgetownLitRenderer::Renderer.stop_node_server
+      end
+
+      hook :site, :server_shutdown do
         BridgetownLitRenderer::Renderer.stop_node_server
       end
 
