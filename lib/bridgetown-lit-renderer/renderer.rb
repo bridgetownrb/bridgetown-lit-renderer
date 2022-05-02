@@ -88,7 +88,7 @@ module BridgetownLitRenderer
         "http://127.0.0.1:#{self.class.serverport}",
         "const data = #{data.to_json}; #{built_code}",
         "Authorization" => "Bearer #{self.class.authtoken}"
-      ).body
+      ).body.force_encoding("utf-8")
 
       if output == "SCRIPT NOT VALID!"
         output = <<~HTML
