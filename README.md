@@ -107,22 +107,40 @@ customElements.define('happy-days', HappyDaysElement)
 Finally, create a new `.erb` page somewhere in `src`, and add this to your template:
 
 ```erb
-<%= lit data: { hello: "there" } do %>
-  <happy-days hello="${data.hello}"></happy-days>
-<% end %>
+<%= lit :happy_days, hello: "there" %>
 ```
+
+(The helper will know how to convert the tag name and attribute keywords to HTML output.)
 
 Now start up your Bridgetown site, visit the page, and if all goes well, you should see a box containing "Hello there!" and a timestamp when the page was first rendered.
 
-You can reload the page several times and see that the timestamp doesn't change, because Lit's SSR + Hydration support knows not to re-render the component. However, if you change the `hello` attribute in the HTML, you'll get a re-render and thus see a new timestamp. _How cool is that?!_
+You can reload the page several times and see that the timestamp doesn't change, because Lit's SSR + Hydration support knows not to re-render the component. However, if you change the `hello` attribute, you'll get a re-render and thus see a new timestamp. _How cool is that?!_
 
 ### Lit Helper Options
 
-The `lit` helper works in any Ruby template language and let's you pass data down to the Lit SSR build process. As long as your `data` value is an object that can be converted to JSON (via Ruby's `to_json`), you're set. In fact, you can even pass your page/resource front matter along for the ride:
+The `lit` helper works in any Ruby template language and let's you pass data down to the Lit SSR build process. Any value that's not alreadey a string will be converted to JSON (via Ruby's `to_json`). You can use a symbol or string for the tag name and underscores are automatically converted to dashes.
+
+```erb
+<%= lit :page_header, title: resource.data.title %>
+```
+
+(Remember, all custom elements always must have at least one dash within the HTML.)
+
+If you pass a block to `lit`, it will add that additional HTML into the Lit template output:
+
+```erb
+<%= lit :ui_sidebar do %>
+  <h2 slot="title">Nice Sidebar</h2>
+<% end %>
+```
+
+You can also pass page/resource front matter and other data along via the `data` keyword, which then can be used in the block. In addition, if a tag name isn't present, you can add it yourself in within the block.
 
 ```erb
 <%= lit data: resource.data do %>
-  <page-header title="${data.title}"></page-header>
+  <page-header>
+    <h1>${data.title}</h1>
+  </page-header>
 <% end %>
 ```
 
