@@ -19,7 +19,7 @@ module BridgetownLitRenderer
       end
 
       process_tag = ->(tag, attributes, code) do
-        valid_tag = tag.to_s.tr("_","-")
+        valid_tag = tag.to_s.tr("_", "-")
         segments = ["<#{valid_tag}"]
         attributes.each do |attr, _|
           attr = attr.to_s.tr("_", "-")
@@ -52,16 +52,13 @@ module BridgetownLitRenderer
         &block
       |
         code = block ? view.capture(&block) : ""
-
-        if tag
-          data = data.merge(kwargs)
-          code = process_tag.(tag, data, code)
-        end
+        code = process_tag.(tag, kwargs, code) if tag
 
         if hydrate_root
           code = "<hydrate-root>#{code.sub(%r{<([a-zA-Z]+-[a-zA-Z-]*)}, "<\\1 defer-hydration")}</hydrate-root>" # rubocop:disable Layout/LineLength
         end
 
+        data = data.merge(kwargs)
         data = jsonify_data.(data)
 
         entry_key = BridgetownLitRenderer::Renderer.instance.entry_key(entry)
