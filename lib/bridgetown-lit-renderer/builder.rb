@@ -18,16 +18,51 @@ module BridgetownLitRenderer
         BridgetownLitRenderer::Renderer.stop_node_server
       end
 
+      process_tag = ->(tag, attributes, code) do
+        valid_tag = tag.to_s.tr("_","-")
+        segments = ["<#{valid_tag}"]
+        attributes.each do |attr, _|
+          attr = attr.to_s.tr("_", "-")
+          segments << %( #{attr}="${data.#{attr}}")
+        end
+        segments << ">"
+        segments << code
+        segments << "</#{valid_tag}>"
+        segments.join
+      end
+
+      jsonify_data = ->(data) do
+        data.map do |k, v|
+          processed_value = case v
+                            when String
+                              v
+                            else
+                              v.to_json
+                            end
+          [k, processed_value]
+        end.to_h
+      end
+
       helper "lit", helpers_scope: true do |
+        tag = nil,
         data: {},
         hydrate_root: true,
         entry: "./config/lit-components-entry.js",
+        **kwargs,
         &block
       |
-        code = view.capture(&block)
+        code = block ? view.capture(&block) : ""
+
+        if tag
+          data = data.merge(kwargs)
+          code = process_tag.(tag, data, code)
+        end
+
         if hydrate_root
           code = "<hydrate-root>#{code.sub(%r{<([a-zA-Z]+-[a-zA-Z-]*)}, "<\\1 defer-hydration")}</hydrate-root>" # rubocop:disable Layout/LineLength
         end
+
+        data = jsonify_data.(data)
 
         entry_key = BridgetownLitRenderer::Renderer.instance.entry_key(entry)
         BridgetownLitRenderer::Renderer.instance.cache.getset(
