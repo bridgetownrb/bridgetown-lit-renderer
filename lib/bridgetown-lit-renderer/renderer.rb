@@ -54,6 +54,14 @@ module BridgetownLitRenderer
       @cache ||= Bridgetown::Cache.new("LitSSR")
     end
 
+    def call_http_server(payload)
+      Faraday.post(
+        "http://127.0.0.1:#{self.class.serverport}",
+        payload,
+        "Authorization" => "Bearer #{self.class.authtoken}"
+      ).body.force_encoding("utf-8")
+    end
+
     def esbuild(code)
       raise "You must first assign the `site' accessor" unless site
 
@@ -70,7 +78,7 @@ module BridgetownLitRenderer
       end
     end
 
-    def render(code, data:, entry:) # rubocop:todo Metrics/MethodLength
+    def render(code, data:, entry:)
       raise "You must first assign the `site' accessor" unless site
 
       cache_key = "esbuild-#{code}#{entry}#{entry_key(entry)}"
@@ -84,11 +92,7 @@ module BridgetownLitRenderer
 
       self.class.start_node_server(site.in_root_dir("node_modules"))
 
-      output = Faraday.post(
-        "http://127.0.0.1:#{self.class.serverport}",
-        "const data = #{data.to_json}; #{built_code}",
-        "Authorization" => "Bearer #{self.class.authtoken}"
-      ).body.force_encoding("utf-8")
+      output = call_http_server("const data = #{data.to_json}; #{built_code}")
 
       if output == "SCRIPT NOT VALID!"
         output = <<~HTML

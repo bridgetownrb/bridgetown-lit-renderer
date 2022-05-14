@@ -1,5 +1,5 @@
 const http = require("http")
-const litexec = require("./ssr_exec")
+const litexec = require("./server/ssr_exec")
 
 const server = http.createServer((req, res) => {
   if (req.method === "POST" && req.headers.authorization?.endsWith(process.env.LIT_SSR_AUTH_TOKEN)) {

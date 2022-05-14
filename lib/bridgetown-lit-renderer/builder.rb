@@ -2,7 +2,7 @@
 
 module BridgetownLitRenderer
   class Builder < Bridgetown::Builder
-    def build # rubocop:todo Metrics/AbcSize, Metrics/MethodLength
+    def build # rubocop:todo Metrics/AbcSize, Metrics/MethodLength, Metrics/CyclomaticComplexity
       BridgetownLitRenderer::Renderer.instance.site = site
       BridgetownLitRenderer::Renderer.instance.reset
 
@@ -43,7 +43,7 @@ module BridgetownLitRenderer
         end.to_h
       end
 
-      helper "lit", helpers_scope: true do |
+      helper "lit", helpers_scope: true do | # rubocop:todo Metrics/ParameterLists
         tag = nil,
         data: {},
         hydrate_root: true,
