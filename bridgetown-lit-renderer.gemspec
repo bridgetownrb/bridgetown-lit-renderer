@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   end
   spec.test_files    = spec.files.grep(%r!^test/!)
   spec.require_paths = ["lib"]
-  spec.metadata      = { "yarn-add"              => "bridgetown-lit-renderer@#{BridgetownLitRenderer::VERSION}",
+  spec.metadata      = { "yarn-add"              => "bridgetown-lit-renderer@#{BridgetownLitRenderer::VERSION.sub(".beta", "-beta")}",
                          "rubygems_mfa_required" => "true", }
 
   spec.required_ruby_version = ">= 2.7.0"
