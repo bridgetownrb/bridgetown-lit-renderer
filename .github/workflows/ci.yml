@@ -1,3 +1,14 @@
+name: CI Test
+
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - main
+
+jobs:
   package-test:
     runs-on: ubuntu-latest
 
