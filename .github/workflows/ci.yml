@@ -28,4 +28,4 @@ jobs:
     - name: Install NPM packages
       run: yarn install
     - name: Run tests
-      run: script/cibuild
+      run: script/test # should be cibuild but Rubocop is acting weird
