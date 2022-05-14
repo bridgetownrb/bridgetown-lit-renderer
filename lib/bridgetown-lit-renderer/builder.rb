@@ -32,7 +32,7 @@ module BridgetownLitRenderer
       end
 
       jsonify_data = ->(data) do
-        data.map do |k, v|
+        data.to_h do |k, v|
           processed_value = case v
                             when String
                               v
@@ -40,7 +40,7 @@ module BridgetownLitRenderer
                               v.to_json
                             end
           [k, processed_value]
-        end.to_h
+        end
       end
 
       helper "lit", helpers_scope: true do | # rubocop:todo Metrics/ParameterLists
