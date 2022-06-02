@@ -9,7 +9,7 @@ This [Bridgetown](https://www.bridgetownrb.com) plugin provides you with an easy
 
 ## Documentation
 
-**[The official documentation is now available on the Bridgetown website.](https://edge.bridgetownrb.com/docs/components/list)**
+**[The official documentation is now available on the Bridgetown website.](https://edge.bridgetownrb.com/docs/components/lit)**
 
 [Check out the demo site repo.](https://github.com/bridgetownrb/lit-renderer-example)
 
