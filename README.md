@@ -7,7 +7,11 @@
 
 This [Bridgetown](https://www.bridgetownrb.com) plugin provides you with an easy-to-use pipeline for SSR + hydration of Lit components. Create "islands" of interactivity using Lit-based web components which are fully supported in all major browsers, and take full advantage of scoped component styling via the shadow DOM.
 
-[Check out the demo site repo](https://github.com/bridgetownrb/lit-renderer-example), or keep reading to get started.
+## Documentation
+
+**[The official documentation is now available on the Bridgetown website.](https://edge.bridgetownrb.com/docs/components/list)**
+
+[Check out the demo site repo.](https://github.com/bridgetownrb/lit-renderer-example)
 
 ## Installation
 
@@ -17,7 +21,7 @@ Starting in Bridgetown v1.1, you can install this plugin via a bundled configura
 $ bin/bridgetown configure lit
 ```
 
-Keep reading for a manual installation overview, or [skip this section](#take-lit-for-a-spin) to continue reading about plugin usage.
+For a manual installation overview:
 
 Run this command to add this plugin to your site's Gemfile, along with Lit and SSR support:
 
@@ -71,105 +75,6 @@ Now add the following to the top of your `frontend/javascript/index.js` file:
 ```js
 import "bridgetown-lit-renderer"
 ```
-
-### Take Lit for a Spin
-
-For the purposes of testing your install, create the `src/_components/happy-days.lit.js` file:
-
-```js
-import "lit/experimental-hydrate-support.js"
-import { LitElement, html, css } from "lit"
-
-export class HappyDaysElement extends LitElement {
-  static styles = css`
-    :host {
-      display: block;
-      border: 2px dashed gray;
-      padding: 20px;
-      max-width: 300px;
-    }
-  `
-
-  static properties = {
-    hello: { type: String }
-  }
-
-  render() {
-    return html`
-      <p>Hello ${this.hello}! ${Date.now()}</p>
-    `;
-  }
-}
-
-customElements.define('happy-days', HappyDaysElement)
-```
-
-Finally, create a new `.erb` page somewhere in `src`, and add this to your template:
-
-```erb
-<%= lit :happy_days, hello: "there" %>
-```
-
-(The helper will know how to convert the tag name and attribute keywords to HTML output.)
-
-Now start up your Bridgetown site, visit the page, and if all goes well, you should see a box containing "Hello there!" and a timestamp when the page was first rendered.
-
-You can reload the page several times and see that the timestamp doesn't change, because Lit's SSR + Hydration support knows not to re-render the component. However, if you change the `hello` attribute, you'll get a re-render and thus see a new timestamp. _How cool is that?!_
-
-### Lit Helper Options
-
-The `lit` helper works in any Ruby template language and let's you pass data down to the Lit SSR build process. Any value that's not alreadey a string will be converted to JSON (via Ruby's `to_json`). You can use a symbol or string for the tag name and underscores are automatically converted to dashes.
-
-```erb
-<%= lit :page_header, title: resource.data.title %>
-```
-
-(Remember, all custom elements always must have at least one dash within the HTML.)
-
-If you pass a block to `lit`, it will add that additional HTML into the Lit template output:
-
-```erb
-<%= lit :ui_sidebar do %>
-  <h2 slot="title">Nice Sidebar</h2>
-<% end %>
-```
-
-You can also pass page/resource front matter and other data along via the `data` keyword, which then can be used in the block. In addition, if a tag name isn't present, you can add it yourself in within the block.
-
-```erb
-<%= lit data: resource.data do %>
-  <page-header>
-    <h1>${data.title}</h1>
-  </page-header>
-<% end %>
-```
-
-When the component is hydrated, it will utilize the same data that was passed at build time and avoid a client-side re-render. However, from that point forward you're free to mutate component attribute/properties to trigger re-renders as normal. [Check out Lit's `firstUpdated` method](https://lit.dev/docs/components/lifecycle/#reactive-update-cycle-completing) as a good place to start.
-
-You also have the option of choosing a different entry point (aka your JS file that contains or imports one or more Lit components). The default is `./config/lit-components-entry.js`, but you can specify any other file you wish (the path should be relative to your project root).
-
-```erb
-<%= lit data: resource.data, entry: "./frontend/javascript/components/headers.js" do %>
-  <page-header title="${data.title}"></page-header>
-<% end %>
-```
-
-This would typically coincide with a strategy of having multiple esbuild/Webpack entry points, and loading different entry points on different parts of your site. An exercise left for the reader…
-
-### Sidecar CSS Files
-
-The "default" manner in which you author styles in Lit components is to use `css` tagged template literals (as you saw in the `happy-days` example above). However, some people prefer authoring styles in dedicated CSS files.
-
-The [esbuild-plugin-lit-css](https://github.com/bennypowers/lit-css/tree/main/packages/esbuild-plugin-lit-css) plugin allows you to author perfectly vanilla CSS files alongside your component files and import them. 
-
-In order to separate the "globally-accessible" stylesheets you may have in `src/_components` from the Lit component-specific stylesheets (which we only want to get instantiated within component shadow roots), we'll use the following file conventions:
-
-* For global stylesheets, use a `.global.css` suffix.
-* For Lit component stylesheets, use a `.lit.css` suffix.
-
-If you used Bridgetown v1.1 or later's Lit bundled configuration, this is already installed and configured for you. Otherwise, you'll need to do just a bit of manual setup to get things working.
-
-TBD
 
 ### Technical and Performance Considerations
 
