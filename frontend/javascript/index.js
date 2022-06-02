@@ -2,6 +2,7 @@
 
 import "bridgetown-lit-renderer" */
 
+import "lit/experimental-hydrate-support.js"
 import { hydrateShadowRoots } from '@webcomponents/template-shadowroot/template-shadowroot.js'
 
 class HydrateRootElement extends HTMLElement {

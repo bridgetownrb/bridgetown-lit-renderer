@@ -1,0 +1,31 @@
+name: CI Test
+
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_JOBS: 4
+      BUNDLE_PATH: "vendor/bundle"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby and Yarn
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "3.0"
+        bundler-cache: true
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '15'
+        cache: 'yarn'
+    - name: Install NPM packages
+      run: yarn install
+    - name: Run tests
+      run: script/test # should be cibuild but Rubocop is acting weird

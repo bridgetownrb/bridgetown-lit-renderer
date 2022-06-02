@@ -54,6 +54,14 @@ module BridgetownLitRenderer
       @cache ||= Bridgetown::Cache.new("LitSSR")
     end
 
+    def call_http_server(payload)
+      Faraday.post(
+        "http://127.0.0.1:#{self.class.serverport}",
+        payload,
+        "Authorization" => "Bearer #{self.class.authtoken}"
+      ).body.force_encoding("utf-8")
+    end
+
     def esbuild(code)
       raise "You must first assign the `site' accessor" unless site
 
@@ -62,6 +70,7 @@ module BridgetownLitRenderer
         @esbuild_notice_printed = true
       end
 
+      # TODO: shouldn't this use the sidecar Node process as well?
       IO.popen(["node", site.in_root_dir("./config/lit-ssr.config.js")], "r+") do |pipe|
         pipe.puts({ code: code }.to_json)
         pipe.close_write
@@ -69,18 +78,12 @@ module BridgetownLitRenderer
       end
     end
 
-    def render(code, data:, entry:, caching: true) # rubocop:todo Metrics/MethodLength, Metrics/AbcSize
+    def render(code, data:, entry:)
       raise "You must first assign the `site' accessor" unless site
 
       cache_key = "esbuild-#{code}#{entry}#{entry_key(entry)}"
 
-      esbuild_fn = -> { esbuild(js_code_block(entry, code)) }
-
-      built_code = if caching
-                     cache.getset(cache_key) { esbuild_fn.() }
-                   else
-                     esbuild_fn.()
-                   end
+      built_code = cache.getset(cache_key) { esbuild(js_code_block(entry, code)) }
 
       unless @render_notice_printed
         Bridgetown.logger.info "Lit SSR:", "Rendering components..."
@@ -89,11 +92,7 @@ module BridgetownLitRenderer
 
       self.class.start_node_server(site.in_root_dir("node_modules"))
 
-      output = Faraday.post(
-        "http://127.0.0.1:#{self.class.serverport}",
-        "const data = #{data.to_json}; #{built_code}",
-        "Authorization" => "Bearer #{self.class.authtoken}"
-      ).body
+      output = call_http_server("const data = #{data.to_json}; #{built_code}")
 
       if output == "SCRIPT NOT VALID!"
         output = <<~HTML
@@ -101,7 +100,7 @@ module BridgetownLitRenderer
             Lit SSR error in #{entry}, see logs
           </ssr-error>
         HTML
-        cache.delete(cache_key) if caching
+        cache.delete(cache_key)
       end
 
       output.html_safe
@@ -110,7 +109,6 @@ module BridgetownLitRenderer
     def js_code_block(entry, code)
       entry_import = "import #{entry.to_json}"
       <<~JS
-        import { Readable } from "stream"
         import { render } from "@lit-labs/ssr/lib/render-with-global-dom-shim.js"
         import { html } from "lit"
         #{entry_import}

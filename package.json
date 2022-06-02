@@ -1,6 +1,6 @@
 {
   "name": "bridgetown-lit-renderer",
-  "version": "1.1.1",
+  "version": "2.0.0-beta3",
   "main": "frontend/javascript/index.js",
   "exports": {
     ".": {
@@ -27,6 +27,8 @@
   "dependencies": {
     "@webcomponents/template-shadowroot": "^0.1.0",
     "colors": "^1.4.0",
-    "esbuild": "^0.12"
+    "esbuild": "^0.14",
+    "glob": "^7.2.0",
+    "@lit-labs/ssr": "^2.1.0"
   }
 }

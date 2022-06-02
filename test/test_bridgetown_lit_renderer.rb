@@ -4,6 +4,7 @@ require_relative "./helper"
 
 class TestBridgetownLitRenderer < Minitest::Test
   def setup
+    Dir.chdir ROOT_DIR
     @site = Bridgetown::Site.new(Bridgetown.configuration(
                                    "root_dir"    => root_dir,
                                    "source"      => source_dir,
@@ -14,14 +15,14 @@ class TestBridgetownLitRenderer < Minitest::Test
 
   context "sample plugin" do
     setup do
-      with_metadata title: "My Awesome Site" do
-        @site.process
-        @contents = File.read(dest_dir("index.html"))
-      end
+      @site.process
+      @contents = File.read(dest_dir("index.html"))
     end
 
-    should "output the overridden metadata" do
-      assert_includes @contents, "<title>My Awesome Site</title>"
+    should "output the Lit component" do
+      assert_includes @contents, "<hydrate-root><happy-days"
+      assert_includes @contents, "<p>Hello <!--lit-part-->there<!--/lit-part-->!"
+      assert_includes @contents, "</template></happy-days></hydrate-root>"
     end
   end
 end
