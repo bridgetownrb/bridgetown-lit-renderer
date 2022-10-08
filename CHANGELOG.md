@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.0] - 2022-10-08
+
+- Work with latest Lit SSR, upgrade to initializers system in Bridgetown 1.2
+
 ## [2.0.0.beta3] - 2022-05-14
 
 - Relocate `@lit-labs/ssr` to package dependency, import the experimental hydrate module directly

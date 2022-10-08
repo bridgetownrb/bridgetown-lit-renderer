@@ -3,4 +3,7 @@ layout: default
 ---
 
 Testing Lit SSR!
-<%= lit :happy_days, hello: "there" %>
+<%= lit :happy_days, hello: "there" do %>
+  <p>Captured <%= 'content'.capitalize %>!</p>
+<% end %>
+

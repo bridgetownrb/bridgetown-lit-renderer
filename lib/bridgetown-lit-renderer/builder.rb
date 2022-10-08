@@ -43,7 +43,7 @@ module BridgetownLitRenderer
         end
       end
 
-      helper "lit", helpers_scope: true do | # rubocop:todo Metrics/ParameterLists
+      helper "lit" do | # rubocop:todo Metrics/ParameterLists
         tag = nil,
         data: {},
         hydrate_root: true,
@@ -51,7 +51,7 @@ module BridgetownLitRenderer
         **kwargs,
         &block
       |
-        code = block ? view.capture(&block) : ""
+        code = block ? helpers.view.capture(&block) : ""
         code = process_tag.(tag, kwargs, code) if tag
 
         if hydrate_root
@@ -75,5 +75,3 @@ module BridgetownLitRenderer
     end
   end
 end
-
-BridgetownLitRenderer::Builder.register

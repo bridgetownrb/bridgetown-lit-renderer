@@ -16,12 +16,15 @@ module.exports = {
   execScript(str) {
     const vm = require("vm")
     const contextObject = {
-      require: require,
-      console: console,
-      process: process,
-      global: global,
-      URL: URL,
-      Buffer: Buffer,
+      require,
+      console,
+      process,
+      global,
+      URL,
+      URLSearchParams,
+      Buffer,
+      setTimeout() {},
+      clearTimeout() {},
       __filename: "__lit_eval.js",
     }
 
