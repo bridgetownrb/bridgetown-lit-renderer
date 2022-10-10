@@ -21,15 +21,23 @@ Starting in Bridgetown v1.1, you can install this plugin via a bundled configura
 $ bin/bridgetown configure lit
 ```
 
-For a manual installation overview:
+For a manual installation overview (Bridgetown 1.2+):
 
-Run this command to add this plugin to your site's Gemfile, along with Lit and SSR support:
+Run this command to add this plugin to your site's Gemfile, along with JavaScript packages for Lit and SSR support:
 
 ```shell
-$ bundle add bridgetown-lit-renderer -g bridgetown_plugins
+$ bundle add bridgetown-lit-renderer
 
 $ yarn add lit bridgetown-lit-renderer
 ```
+
+Then add the initializer to your configuration in `config/initializers.rb`:
+
+```ruby
+init :"bridgetown-lit-renderer"
+```
+
+(For Bridgetown 1.1 or earlier, [read these instructions](https://github.com/bridgetownrb/bridgetown-lit-renderer/tree/v2.0.0.beta3).)
 
 Create a file in `config/lit-ssr.config.js` with the following:
 
@@ -75,6 +83,8 @@ Now add the following to the top of your `frontend/javascript/index.js` file:
 ```js
 import "bridgetown-lit-renderer"
 ```
+
+(It's very important this comes _before_ loading any other JavaScript code which might make use of Lit, such as the Bridgetown Quick Search plugin.)
 
 ### Technical and Performance Considerations
 
