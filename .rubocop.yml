@@ -9,3 +9,4 @@ AllCops:
   Exclude:
     - "*.gemspec"
     - test/helper.rb
+    - vendor/bundle/**/* # needed for GitHub Actions
