@@ -1,4 +1,4 @@
-import "lit/experimental-hydrate-support.js"
+import "@lit-labs/ssr-client/lit-element-hydrate-support.js"
 import { LitElement, html, css } from "lit"
 
 export class HappyDaysElement extends LitElement {

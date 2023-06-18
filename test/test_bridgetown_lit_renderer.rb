@@ -22,7 +22,7 @@ class TestBridgetownLitRenderer < Minitest::Test
     end
 
     should "output the Lit component" do
-      assert_includes @contents, "<hydrate-root><happy-days"
+      assert_includes @contents, "<hydrate-root><!--lit-node 1--><happy-days"
       assert_includes @contents, "<p>Hello <!--lit-part-->there<!--/lit-part-->!"
       assert_includes @contents, "</template>\n  <p>Captured Content!</p>"
       assert_includes @contents, "</happy-days></hydrate-root>"
