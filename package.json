@@ -8,7 +8,7 @@
         "default": "./frontend/javascript/index.js"
       }
     },
-    "./build": "./src/build.js"
+    "./build": "./src/build.mjs"
   },
   "repository": {
     "type": "git",
