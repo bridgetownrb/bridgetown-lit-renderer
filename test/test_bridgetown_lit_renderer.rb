@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "./helper"
+require_relative "helper"
 
 class TestBridgetownLitRenderer < Minitest::Test
   def setup
@@ -15,7 +15,7 @@ class TestBridgetownLitRenderer < Minitest::Test
     @site = Bridgetown::Site.new(@config)
   end
 
-  context "sample plugin" do
+  context "Lit renderer plugin" do
     setup do
       @site.process
       @contents = File.read(dest_dir("index.html"))

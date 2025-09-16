@@ -1,5 +1,5 @@
-const build = require("../../../src/build")
-const { plugins } = require("./esbuild-plugins.js")
+import build from "../../../src/build.mjs"
+import { plugins } from "./esbuild-plugins.js"
 
 const esbuildOptions = { plugins }
 

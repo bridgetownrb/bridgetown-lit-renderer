@@ -95,11 +95,13 @@ module BridgetownLitRenderer
       output = call_http_server("const data = #{data.to_json}; #{built_code}")
 
       if output == "SCRIPT NOT VALID!"
+        # rubocop:disable Bridgetown/InsecureHeredoc
         output = <<~HTML
           <ssr-error style="display:block; padding:0.3em 0.5em; color:white; background:maroon; font-weight:bold">
             Lit SSR error in #{entry}, see logs
           </ssr-error>
         HTML
+        # rubocop:enable Bridgetown/InsecureHeredoc
         cache.delete(cache_key)
       end
 

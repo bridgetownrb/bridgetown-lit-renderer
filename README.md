@@ -9,26 +9,26 @@ This [Bridgetown](https://www.bridgetownrb.com) plugin provides you with an easy
 
 ## Documentation
 
-**[The official documentation is now available on the Bridgetown website.](https://edge.bridgetownrb.com/docs/components/lit)**
+**[The official documentation is now available on the Bridgetown website.](https://www.bridgetownrb.com/docs/components/lit)**
 
 [Check out the demo site repo.](https://github.com/bridgetownrb/lit-renderer-example)
 
 ## Installation
 
-Starting in Bridgetown v1.1, you can install this plugin via a bundled configuration:
+You should likely install this plugin via its bundled configuration:
 
 ```shell
 $ bin/bridgetown configure lit
 ```
 
-For a manual installation overview (Bridgetown 1.2+):
+However, for a manual installation overview (Bridgetown 1.2+):
 
 Run this command to add this plugin to your site's Gemfile, along with JavaScript packages for Lit and SSR support:
 
 ```shell
 $ bundle add bridgetown-lit-renderer
 
-$ yarn add lit bridgetown-lit-renderer
+$ npm i lit bridgetown-lit-renderer
 ```
 
 Then add the initializer to your configuration in `config/initializers.rb`:
@@ -37,13 +37,11 @@ Then add the initializer to your configuration in `config/initializers.rb`:
 init :"bridgetown-lit-renderer"
 ```
 
-(For Bridgetown 1.1 or earlier, [read these instructions](https://github.com/bridgetownrb/bridgetown-lit-renderer/tree/v2.0.0.beta3).)
-
 Create a file in `config/lit-ssr.config.js` with the following:
 
 ```js
-const build = require("bridgetown-lit-renderer/build")
-const { plugins } = require("./esbuild-plugins.js")
+import build from "../../../src/build.mjs"
+import { plugins } from "./esbuild-plugins.js"
 
 const esbuildOptions = { plugins }
 
@@ -54,16 +52,14 @@ and `config/esbuild-plugins.js`:
 
 ```js
 // You can add esbuild plugins here you wish to share between the frontend bundles and Lit SSR:
-module.exports = {
-  plugins: []
-}
+export const plugins = []
 ```
 
 and if you're using esbuild for your Bridgetown site, modify `esbuild.config.js``:
 
 ```js
 // at the top of your file:
-const { plugins } = require("./config/esbuild-plugins.js")
+import { plugins } from "./config/esbuild-plugins.js"
 
 const esbuildOptions = {
   // other options
@@ -126,7 +122,7 @@ you should be doing this:
 <% end %>
 ```
 
-**Disabling hydration?** If for some reason you can't permit a `hydrate-root` element to wrap a Lit code block, you can pass a `hydrate_root: false` argument to the `lit` helper. This breaks hydration however, and likewise the [Declarative Shadow DOM (DSD)](https://web.dev/declarative-shadow-dom/) polyfill won't be loaded. (Currently DSD is only supported natively in Chromium-based browsers such as Chrome, Edge, and Brave.) It will thus be up to you to manage those features as you see fit.
+**Disabling hydration?** If for some reason you can't permit a `hydrate-root` element to wrap a Lit code block, you can pass a `hydrate_root: false` argument to the `lit` helper. This breaks hydration however, and likewise the [Declarative Shadow DOM (DSD)](https://web.dev/declarative-shadow-dom/) polyfill won't be loaded. It will thus be up to you to manage those features as you see fit.
 
 ## Testing
 

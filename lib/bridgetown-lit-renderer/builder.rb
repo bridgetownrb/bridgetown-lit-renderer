@@ -21,7 +21,7 @@ module BridgetownLitRenderer
       process_tag = ->(tag, attributes, code) do
         valid_tag = tag.to_s.tr("_", "-")
         segments = ["<#{valid_tag}"]
-        attributes.each do |attr, _|
+        attributes.each_key do |attr|
           attr = attr.to_s.tr("_", "-")
           segments << %( #{attr}="${data.#{attr}}")
         end
