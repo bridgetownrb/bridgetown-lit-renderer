@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [3.0.0] - 2025-09-15
 
+- Bridgetown 2.0 support
 - Convert build script to ESM
 - Update various dependencies
 - Remove DSD polyfill (it's available in all browsers now)
